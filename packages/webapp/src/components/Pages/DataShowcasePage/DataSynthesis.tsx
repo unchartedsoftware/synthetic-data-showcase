@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
+import { ArqueroDetailsList } from '@data-wrangling-components/react'
 import {
 	getTheme,
 	IStackStyles,
@@ -11,8 +12,7 @@ import {
 	TextField,
 } from '@fluentui/react'
 import { memo, useCallback } from 'react'
-import { defaultCsvContent, ICsvTableHeader } from 'src/models/csv'
-import { CsvTable } from './CsvTable'
+import { defaultCsvContent } from 'src/models/csv'
 import { defaultEvaluatedResult, defaultNavigateResult } from '~models'
 import {
 	useCacheSize,
@@ -28,6 +28,7 @@ import {
 	useProcessingProgressSetter,
 	useWasmWorkerValue,
 } from '~states/dataShowcaseContext'
+import { fromRows, rows, tableHeaders } from '~utils/arquero'
 
 export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 	const worker = useWasmWorkerValue()
@@ -68,7 +69,7 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 		setProcessingProgress(0.0)
 
 		const response = await worker?.generate(
-			[sensitiveContent.headers.map(h => h.name), ...sensitiveContent.items],
+			rows(sensitiveContent.table, true),
 			sensitiveContent.headers.filter(h => h.use).map(h => h.name),
 			sensitiveContent.headers
 				.filter(h => h.hasSensitiveZeros)
@@ -82,19 +83,14 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 		)
 
 		setIsProcessing(false)
+
+		const table = fromRows(response)
+
 		setSyntheticContent({
-			headers:
-				response?.[0]?.map(
-					(h, i) =>
-						({
-							name: h,
-							fieldName: i.toString(),
-							use: true,
-							hasSensitiveZeros: false,
-						} as ICsvTableHeader),
-				) ?? [],
-			items: response?.slice(1) ?? [],
+			headers: tableHeaders(table),
+			items: rows(table),
 			delimiter: sensitiveContent.delimiter,
+			table,
 		})
 	}, [
 		worker,
@@ -148,17 +144,29 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 				</Stack>
 			</Stack.Item>
 
-			{syntheticContent.items.length && (
+			{syntheticContent.table && (
 				<>
 					<Stack.Item>
 						<h3>Synthetic data</h3>
 					</Stack.Item>
 					<Stack tokens={subStackTokens}>
-						<Stack.Item>
+						{/* <Stack.Item>
 							<CsvTable
 								content={syntheticContent}
 								pageSize={10}
 								downloadAlias="synthetic_data"
+							/>
+						</Stack.Item>
+						 */}
+						<Stack.Item>
+							<ArqueroDetailsList
+								table={syntheticContent.table}
+								features={{
+									histogramColumnHeaders: true,
+									statsColumnHeaders: true,
+								}}
+								isSortable
+								showColumnBorders
 							/>
 						</Stack.Item>
 					</Stack>

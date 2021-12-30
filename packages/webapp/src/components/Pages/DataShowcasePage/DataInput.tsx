@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
+import { ArqueroDetailsList } from '@data-wrangling-components/react'
 import {
 	Checkbox,
 	getTheme,
@@ -15,8 +16,7 @@ import {
 } from '@fluentui/react'
 import { parse } from 'papaparse'
 import { memo, useCallback, useRef } from 'react'
-import { defaultCsvContent, ICsvTableHeader } from 'src/models/csv'
-import { CsvTable } from './CsvTable'
+import { defaultCsvContent } from 'src/models/csv'
 import { DataBinning } from '~components/DataBinning'
 import { defaultEvaluatedResult, defaultNavigateResult } from '~models'
 import {
@@ -26,8 +26,9 @@ import {
 	useRecordLimit,
 	useSensitiveContent,
 	useSyntheticContentSetter,
-	useWasmWorkerValue,
 } from '~states'
+
+import { columnIndexesWithZeros, fromRows, rows, tableHeaders } from '~utils/arquero'
 
 const openFileIcon: IIconProps = { iconName: 'FabricOpenFolderHorizontal' }
 
@@ -38,7 +39,6 @@ export const DataInput: React.FC = memo(function DataInput() {
 	const setSyntheticContent = useSyntheticContentSetter()
 	const setEvaluatedResult = useEvaluatedResultSetter()
 	const setNavigateResult = useNavigateResultSetter()
-	const worker = useWasmWorkerValue()
 
 	const inputFile = useRef<HTMLInputElement>(null)
 
@@ -72,31 +72,20 @@ export const DataInput: React.FC = memo(function DataInput() {
 				setNavigateResult(defaultNavigateResult)
 				parse<Array<string>>(f, {
 					complete: async results => {
-						const headers =
-							results.data[0]?.map(
-								(h, i) =>
-									({
-										name: h,
-										fieldName: i.toString(),
-										use: true,
-										hasSensitiveZeros: false,
-									} as ICsvTableHeader),
-							) ?? []
-						const items = results.data?.slice(1) ?? []
-
+						const table = fromRows(results.data)
 						setIsProcessing(false)
 						setSensitiveContent({
-							headers,
-							items,
-							columnsWithZeros: await worker?.findColumnsWithZeros(items),
+							headers: tableHeaders(table),
+							items: rows(table),
+							columnsWithZeros: columnIndexesWithZeros(table),
 							delimiter: results.meta.delimiter,
+							table,
 						})
 					},
 				})
 			}
 		},
 		[
-			worker,
 			setIsProcessing,
 			setSyntheticContent,
 			setEvaluatedResult,
@@ -147,7 +136,7 @@ export const DataInput: React.FC = memo(function DataInput() {
 				</Stack>
 			</Stack.Item>
 
-			{sensitiveContent.items.length && (
+			{sensitiveContent.table && (
 				<>
 					<Stack.Item>
 						<Label>Use columns</Label>
@@ -217,7 +206,7 @@ export const DataInput: React.FC = memo(function DataInput() {
 				</>
 			)}
 
-			{sensitiveContent.items.length && (
+			{sensitiveContent.table && (
 				<>
 					<Stack.Item>
 						<Label>Data binning</Label>
@@ -228,15 +217,29 @@ export const DataInput: React.FC = memo(function DataInput() {
 				</>
 			)}
 
-			<Stack.Item>
+			{/* <Stack.Item>
 				<CsvTable
+				TODO: add download header for arquero
 					content={sensitiveContent}
 					pageSize={10}
 					downloadAlias="sensitive_data"
 					disable={isProcessing}
 					takeFirstItems={recordLimit}
 				/>
-			</Stack.Item>
+			</Stack.Item> */}
+			{sensitiveContent.table ? (
+				<Stack.Item>
+					<ArqueroDetailsList
+						table={sensitiveContent.table}
+						features={{
+							histogramColumnHeaders: true,
+							statsColumnHeaders: true,
+						}}
+						isSortable
+						showColumnBorders
+					/>
+				</Stack.Item>
+			) : null}
 		</Stack>
 	)
 })

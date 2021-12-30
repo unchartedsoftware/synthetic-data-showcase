@@ -14,6 +14,7 @@ import { defaultCsvContent, ICsvContent } from 'src/models/csv'
 const state = atom<ICsvContent>({
 	key: 'synthetic-content',
 	default: defaultCsvContent,
+	dangerouslyAllowMutability: true,
 })
 
 export function useSyntheticContent(): [
