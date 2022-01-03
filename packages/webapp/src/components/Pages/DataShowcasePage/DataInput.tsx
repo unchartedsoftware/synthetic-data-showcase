@@ -2,24 +2,21 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
-import { ArqueroDetailsList } from '@data-wrangling-components/react'
+
 import {
 	Checkbox,
 	getTheme,
-	IconButton,
-	IIconProps,
 	IStackStyles,
 	IStackTokens,
 	Label,
 	Stack,
 	TextField,
 } from '@fluentui/react'
-import { from } from 'arquero'
-import { parse } from 'papaparse'
-import { memo, useCallback, useRef } from 'react'
-import { defaultCsvContent } from 'src/models/csv'
+import { FC, memo } from 'react'
+import { CsvTable } from './CsvTable'
+import { useOnFileChange } from './hooks'
 import { DataBinning } from '~components/DataBinning'
-import { defaultEvaluatedResult, defaultNavigateResult } from '~models'
+import { FileInputButton } from '~components/controls'
 import {
 	useEvaluatedResultSetter,
 	useIsProcessing,
@@ -29,19 +26,13 @@ import {
 	useSyntheticContentSetter,
 } from '~states'
 
-import { columnIndexesWithZeros, rows, tableHeaders } from '~utils/arquero'
-
-const openFileIcon: IIconProps = { iconName: 'FabricOpenFolderHorizontal' }
-
-export const DataInput: React.FC = memo(function DataInput() {
+export const DataInput: FC = memo(function DataInput() {
 	const [recordLimit, setRecordLimit] = useRecordLimit()
 	const [isProcessing, setIsProcessing] = useIsProcessing()
 	const [sensitiveContent, setSensitiveContent] = useSensitiveContent()
 	const setSyntheticContent = useSyntheticContentSetter()
 	const setEvaluatedResult = useEvaluatedResultSetter()
 	const setNavigateResult = useNavigateResultSetter()
-
-	const inputFile = useRef<HTMLInputElement>(null)
 
 	const theme = getTheme()
 
@@ -62,39 +53,12 @@ export const DataInput: React.FC = memo(function DataInput() {
 		childrenGap: theme.spacing.s1,
 	}
 
-	const onFileChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const f = e.target.files?.[0]
-
-			if (f) {
-				setIsProcessing(true)
-				setSyntheticContent(defaultCsvContent)
-				setEvaluatedResult(defaultEvaluatedResult)
-				setNavigateResult(defaultNavigateResult)
-				parse<Array<string>>(f, {
-					dynamicTyping: true,
-					header: true,
-					complete: async results => {
-						const table = from(results.data)
-						setIsProcessing(false)
-						setSensitiveContent({
-							headers: tableHeaders(table),
-							items: rows(table),
-							columnsWithZeros: columnIndexesWithZeros(table),
-							delimiter: results.meta.delimiter,
-							table,
-						})
-					},
-				})
-			}
-		},
-		[
-			setIsProcessing,
-			setSyntheticContent,
-			setEvaluatedResult,
-			setNavigateResult,
-			setSensitiveContent,
-		],
+	const onFileChange = useOnFileChange(
+		setIsProcessing,
+		setSyntheticContent,
+		setEvaluatedResult,
+		setNavigateResult,
+		setSensitiveContent,
 	)
 
 	const sensitiveColumnsWithZeros = sensitiveContent.columnsWithZeros?.filter(
@@ -119,22 +83,7 @@ export const DataInput: React.FC = memo(function DataInput() {
 						/>
 					</Stack.Item>
 					<Stack.Item align="end">
-						<IconButton
-							iconProps={openFileIcon}
-							title="Load file"
-							ariaLabel="Load File"
-							onClick={() => {
-								inputFile.current?.click()
-							}}
-						/>
-						<input
-							type="file"
-							multiple={false}
-							disabled={isProcessing}
-							onChange={onFileChange}
-							ref={inputFile}
-							style={{ display: 'none' }}
-						/>
+						<FileInputButton onChange={onFileChange} disabled={isProcessing} />
 					</Stack.Item>
 				</Stack>
 			</Stack.Item>
@@ -208,7 +157,6 @@ export const DataInput: React.FC = memo(function DataInput() {
 					</Stack.Item>
 				</>
 			)}
-
 			{sensitiveContent.table && (
 				<>
 					<Stack.Item>
@@ -219,30 +167,13 @@ export const DataInput: React.FC = memo(function DataInput() {
 					</Stack.Item>
 				</>
 			)}
-
-			{/* <Stack.Item>
+			<Stack.Item>
 				<CsvTable
-				TODO: add download header for arquero
 					content={sensitiveContent}
-					pageSize={10}
 					downloadAlias="sensitive_data"
-					disable={isProcessing}
 					takeFirstItems={recordLimit}
 				/>
-			</Stack.Item> */}
-			{sensitiveContent.table ? (
-				<Stack.Item>
-					<ArqueroDetailsList
-						table={sensitiveContent.table}
-						features={{
-							histogramColumnHeaders: true,
-							statsColumnHeaders: true,
-						}}
-						isSortable
-						showColumnBorders
-					/>
-				</Stack.Item>
-			) : null}
+			</Stack.Item>
 		</Stack>
 	)
 })
