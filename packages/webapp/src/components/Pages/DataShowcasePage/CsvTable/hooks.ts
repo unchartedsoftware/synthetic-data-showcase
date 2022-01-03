@@ -16,25 +16,15 @@ function getCsvContentDownloadUrl(
 	delimiter: string,
 ): string {
 	const extension = downloadExtensions[delimiter]
-
+	const selection = content.headers.filter(h => h.use).map(h => h.name)
+	const output = content.table.select(selection).toCSV({
+		delimiter,
+		limit: nItems
+	})
 	return URL.createObjectURL(
 		new Blob(
 			[
-				content.headers
-					.filter(h => h.use)
-					.map(h => h.name)
-					.join(delimiter)
-					.concat(
-						'\n',
-						content.items
-							.slice(0, nItems)
-							.map(item =>
-								item
-									.filter((_, i) => content.headers[i]?.use === true)
-									.join(delimiter),
-							)
-							.join('\n'),
-					),
+				output,
 			],
 			{ type: extension ? `text/${extension}` : 'text/plain' },
 		),
