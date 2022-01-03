@@ -14,6 +14,7 @@ import {
 	Stack,
 	TextField,
 } from '@fluentui/react'
+import { from } from 'arquero'
 import { parse } from 'papaparse'
 import { memo, useCallback, useRef } from 'react'
 import { defaultCsvContent } from 'src/models/csv'
@@ -28,7 +29,7 @@ import {
 	useSyntheticContentSetter,
 } from '~states'
 
-import { columnIndexesWithZeros, fromRows, rows, tableHeaders } from '~utils/arquero'
+import { columnIndexesWithZeros, rows, tableHeaders } from '~utils/arquero'
 
 const openFileIcon: IIconProps = { iconName: 'FabricOpenFolderHorizontal' }
 
@@ -71,8 +72,10 @@ export const DataInput: React.FC = memo(function DataInput() {
 				setEvaluatedResult(defaultEvaluatedResult)
 				setNavigateResult(defaultNavigateResult)
 				parse<Array<string>>(f, {
+					dynamicTyping: true,
+					header: true,
 					complete: async results => {
-						const table = fromRows(results.data)
+						const table = from(results.data)
 						setIsProcessing(false)
 						setSensitiveContent({
 							headers: tableHeaders(table),
