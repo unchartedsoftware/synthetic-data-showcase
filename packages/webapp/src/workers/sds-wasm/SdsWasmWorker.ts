@@ -2,17 +2,6 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
-import {
-	AttributeRows,
-	AttributesInColumn,
-	CsvRecord,
-	IAggregatedCombinations,
-	IAttributeRowsMap,
-	IAttributesIntersectionValue,
-	IEvaluatedResult,
-	INavigateResult,
-	ISelectedAttributes,
-} from 'src/models'
 import { v4 } from 'uuid'
 import {
 	SdsWasmGenerateMessage,
@@ -34,6 +23,17 @@ import {
 	SdsWasmNavigateResponse,
 	SdsWasmReportProgressResponse,
 } from '.'
+import {
+	AttributeRows,
+	AttributesInColumn,
+	CsvRecord,
+	IAggregatedCombinations,
+	IAttributeRowsMap,
+	IAttributesIntersectionValue,
+	IEvaluatedResult,
+	INavigateResult,
+	ISelectedAttributes,
+} from '~models'
 
 type SdsWasmResponseCallback = ((value: SdsWasmResponse) => void) | undefined
 

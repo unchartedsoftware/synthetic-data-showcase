@@ -88,7 +88,7 @@ export const DataInput: FC = memo(function DataInput() {
 				</Stack>
 			</Stack.Item>
 
-			{sensitiveContent.table && (
+			{sensitiveContent.table.numCols() > 0 && (
 				<>
 					<Stack.Item>
 						<Label>Use columns</Label>
@@ -157,7 +157,7 @@ export const DataInput: FC = memo(function DataInput() {
 					</Stack.Item>
 				</>
 			)}
-			{sensitiveContent.table && (
+			{sensitiveContent.table.numCols() > 0 && (
 				<>
 					<Stack.Item>
 						<Label>Data binning</Label>

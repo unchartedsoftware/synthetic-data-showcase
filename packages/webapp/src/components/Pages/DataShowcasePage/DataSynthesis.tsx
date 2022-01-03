@@ -2,7 +2,6 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
-import { ArqueroDetailsList } from '@data-wrangling-components/react'
 import {
 	getTheme,
 	IStackStyles,
@@ -12,8 +11,12 @@ import {
 	TextField,
 } from '@fluentui/react'
 import { memo, useCallback } from 'react'
-import { defaultCsvContent } from 'src/models/csv'
-import { defaultEvaluatedResult, defaultNavigateResult } from '~models'
+import { CsvTable } from './CsvTable'
+import {
+	defaultCsvContent,
+	defaultEvaluatedResult,
+	defaultNavigateResult,
+} from '~models'
 import {
 	useCacheSize,
 	useIsProcessing,
@@ -144,29 +147,16 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 				</Stack>
 			</Stack.Item>
 
-			{syntheticContent.table && (
+			{syntheticContent.table.numCols() > 0 && (
 				<>
 					<Stack.Item>
 						<h3>Synthetic data</h3>
 					</Stack.Item>
 					<Stack tokens={subStackTokens}>
-						{/* <Stack.Item>
+						<Stack.Item>
 							<CsvTable
 								content={syntheticContent}
-								pageSize={10}
 								downloadAlias="synthetic_data"
-							/>
-						</Stack.Item>
-						 */}
-						<Stack.Item>
-							<ArqueroDetailsList
-								table={syntheticContent.table}
-								features={{
-									histogramColumnHeaders: true,
-									statsColumnHeaders: true,
-								}}
-								isSortable
-								showColumnBorders
 							/>
 						</Stack.Item>
 					</Stack>

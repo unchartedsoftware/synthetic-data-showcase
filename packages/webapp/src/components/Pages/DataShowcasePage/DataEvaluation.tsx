@@ -11,7 +11,6 @@ import {
 	TextField,
 } from '@fluentui/react'
 import { memo, useCallback } from 'react'
-import { CsvRecord } from 'src/models/csv'
 import {
 	FabricatedCountChart,
 	LeakageCountChart,
@@ -36,6 +35,7 @@ import {
 	useSyntheticContentValue,
 	useWasmWorkerValue,
 } from '~states/dataShowcaseContext'
+import { headers, rows, sensitiveZeros } from '~utils/arquero'
 
 export const DataEvaluation: React.FC = memo(function DataEvaluation() {
 	const worker = useWasmWorkerValue()
@@ -97,18 +97,10 @@ export const DataEvaluation: React.FC = memo(function DataEvaluation() {
 		setProcessingProgress(0.0)
 
 		const response = await worker?.evaluate(
-			[
-				sensitiveContent.headers.map(h => h.name),
-				...(sensitiveContent.items as CsvRecord[]),
-			],
-			[
-				syntheticContent.headers.map(h => h.name),
-				...(syntheticContent.items as CsvRecord[]),
-			],
-			sensitiveContent.headers.filter(h => h.use).map(h => h.name),
-			sensitiveContent.headers
-				.filter(h => h.hasSensitiveZeros)
-				.map(h => h.name),
+			rows(sensitiveContent.table, true),
+			rows(syntheticContent.table, true),
+			headers(sensitiveContent, true),
+			sensitiveZeros(sensitiveContent),
 			recordLimit,
 			reportingLength,
 			resolution,

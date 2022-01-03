@@ -31,6 +31,7 @@ import {
 	useSelectedAttributesSetter,
 	useSelectedPipelineStepSetter,
 } from '~states/dataShowcaseContext'
+import { rows } from '~utils/arquero'
 
 const backIcon: IIconProps = { iconName: 'Back' }
 
@@ -95,8 +96,8 @@ export const DataNavigation: React.FC = memo(function DataNavigation() {
 			setSelectedAttributes({})
 			setNavigateResult(defaultNavigateResult)
 			setSelectedAttributeRows([])
-
-			worker.navigate(syntheticContent.items).then(result => {
+			const input = rows(syntheticContent.table)
+			worker.navigate(input).then(result => {
 				if (isMounted.current) {
 					if (result) {
 						setNavigateResult(result)
@@ -106,7 +107,7 @@ export const DataNavigation: React.FC = memo(function DataNavigation() {
 				}
 			})
 		}
-	}, [syntheticContent.items, setIsLoading, setSelectedAttributeRows, setSelectedAttributes, worker, setNavigateResult])
+	}, [syntheticContent, setIsLoading, setSelectedAttributeRows, setSelectedAttributes, worker, setNavigateResult])
 
 	useEffect(() => {
 		return () => {

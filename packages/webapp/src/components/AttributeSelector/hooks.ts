@@ -4,8 +4,8 @@
  */
 import { Dispatch, MutableRefObject, SetStateAction, useCallback } from 'react'
 import { SetterOrUpdater } from 'recoil'
-import { SdsWasmWorker } from 'src/workers/sds-wasm'
 import { AttributeRows, INavigateResult, ISelectedAttributes } from '~models'
+import { SdsWasmWorker } from '~workers/sds-wasm'
 
 async function loadNewSelectedAttributeRows(
 	setIsLoading: Dispatch<SetStateAction<boolean>>,

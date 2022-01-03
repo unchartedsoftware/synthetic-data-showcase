@@ -2,10 +2,10 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
-import { CsvRecord } from 'src/models/csv'
 import {
 	AttributeRows,
 	AttributesInColumn,
+	CsvRecord,
 	IAggregatedCombinations,
 	IAttributeRowsMap,
 	IAttributesIntersectionValue,

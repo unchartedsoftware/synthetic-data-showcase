@@ -2,9 +2,9 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
-import { fromCSV } from 'arquero'
+import { fromCSV, table } from 'arquero'
 import ColumnTable from 'arquero/dist/types/table/column-table'
-import { CsvRecord, ICsvTableHeader } from '~models'
+import { CsvRecord, ICsvContent, ICsvTableHeader } from '~models'
 
 /**
  * Create a table from a set of compute results.
@@ -12,22 +12,20 @@ import { CsvRecord, ICsvTableHeader } from '~models'
  * @param results
  * @returns
  */
-export function fromRows(rows?: CsvRecord[]): ColumnTable | undefined {
-    if (rows) {
-        // TEMP: we're re-creating the raw text so arquero can auto-detect types
-        const csv = rows.map(d => d.join(',')).join('\n')
-        return fromCSV(csv)
-    }
+export function fromRows(rows?: CsvRecord[]): ColumnTable {
+	if (rows) {
+		// TEMP: we're re-creating the raw text so arquero can auto-detect types
+		const csv = rows.map(d => d.join(',')).join('\n')
+		return fromCSV(csv)
+	}
+	return table({})
 }
 
 /**
  * Returns a list of column indices that contain at least one 0.
  * @param table
  */
-export function columnIndexesWithZeros(table?: ColumnTable): number[] {
-    if (!table) {
-        return []
-    }
+export function columnIndexesWithZeros(table: ColumnTable): number[] {
 	return table.columnNames().reduce((acc, name, idx) => {
 		const values = table.array(name)
 		if (values.some(v => v === 0)) {
@@ -42,10 +40,7 @@ export function columnIndexesWithZeros(table?: ColumnTable): number[] {
  * @param table
  * @returns
  */
-export function tableHeaders(table?: ColumnTable): ICsvTableHeader[] {
-    if (!table) {
-        return []
-    }
+export function tableHeaders(table: ColumnTable): ICsvTableHeader[] {
 	return table.columnNames().map(
 		(h, i) =>
 			({
@@ -58,16 +53,26 @@ export function tableHeaders(table?: ColumnTable): ICsvTableHeader[] {
 }
 
 /**
+ * Get a list of column names from the table
+ * @param table
+ * @param onlyUsed
+ */
+export function headers(data: ICsvContent, onlyUsed = false): string[] {
+	const filtered = onlyUsed ? data.headers.filter(h => h.use) : data.headers
+	return filtered.map(h => h.name)
+}
+
+export function sensitiveZeros(data: ICsvContent): string[] {
+	return data.headers.filter(h => h.hasSensitiveZeros).map(h => h.name)
+}
+/**
  * Creates a set of csv-compatible rows from the table.
  * This is a bit inefficient because arquero is columnar.
  * TODO: Note that we are also turning all values into strings to comply with worker interface.
  * TODO: there are many ways to manipulate this data in arquero, experiment to find the most efficient
  * @param table
  */
-export function rows(table?: ColumnTable, includeHeader = false): CsvRecord[] {
-    if (!table) {
-        return []
-    }
+export function rows(table: ColumnTable, includeHeader = false): CsvRecord[] {
 	const rows = includeHeader ? [table.columnNames()] : []
 	table.scan(idx => {
 		const row: string[] = []

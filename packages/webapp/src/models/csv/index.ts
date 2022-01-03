@@ -2,6 +2,7 @@
  * Copyright (c) Microsoft. All rights reserved.
  * Licensed under the MIT license. See LICENSE file in the project.
  */
+import { table } from 'arquero'
 import ColumnTable from 'arquero/dist/types/table/column-table'
 export type CsvRecord = string[]
 
@@ -17,7 +18,7 @@ export interface ICsvContent {
 	items: CsvRecord[]
 	columnsWithZeros?: number[]
 	delimiter: string
-	table?: ColumnTable
+	table: ColumnTable
 }
 
 export const defaultCsvContent: ICsvContent = {
@@ -25,4 +26,5 @@ export const defaultCsvContent: ICsvContent = {
 	items: [],
 	columnsWithZeros: undefined,
 	delimiter: ',',
+	table: table({}),
 }

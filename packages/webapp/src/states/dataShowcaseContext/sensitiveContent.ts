@@ -9,7 +9,7 @@ import {
 	useRecoilValue,
 	useSetRecoilState,
 } from 'recoil'
-import { defaultCsvContent, ICsvContent } from 'src/models/csv'
+import { defaultCsvContent, ICsvContent } from '~models'
 
 const state = atom<ICsvContent>({
 	key: 'sensitive-content',

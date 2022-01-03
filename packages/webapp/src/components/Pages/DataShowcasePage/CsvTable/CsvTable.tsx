@@ -4,10 +4,11 @@
  */
 import { ArqueroDetailsList } from '@data-wrangling-components/react'
 import { IconButton, IIconProps, Stack, useTheme } from '@fluentui/react'
-import { memo, useRef } from 'react'
-import { ICsvContent } from 'src/models/csv'
+import ColumnTable from 'arquero/dist/types/table/column-table'
+import { memo, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { useOnDownloadCsvContent } from './hooks'
+import { ICsvContent } from '~models'
 
 const downloadIcon: IIconProps = { iconName: 'Download' }
 
@@ -26,15 +27,7 @@ export const CsvTable: React.FC<ICsvTableProps> = memo(function CsvTable({
 
 	const theme = useTheme()
 
-	const nItems = takeFirstItems
-		? Math.min(content.items.length, takeFirstItems)
-		: content.items.length
-
-	let items = content.items
-
-	if (nItems !== items.length) {
-		items = items.slice(0, nItems)
-	}
+	const nItems = useLimit(content.table, takeFirstItems)
 
 	const onDownload = useOnDownloadCsvContent(
 		downloadAnchorRef,
@@ -43,7 +36,7 @@ export const CsvTable: React.FC<ICsvTableProps> = memo(function CsvTable({
 		downloadAlias,
 	)
 
-	if (!content.table) {
+	if (content.table.numCols() === 0) {
 		return null
 	}
 
@@ -77,3 +70,11 @@ export const CsvTable: React.FC<ICsvTableProps> = memo(function CsvTable({
 const DownloadAnchor = styled.a`
 	display: none;
 `
+
+function useLimit(table: ColumnTable, takeFirstItems?: number): number {
+	return useMemo(
+		() =>
+			takeFirstItems ? Math.min(table.numRows(), takeFirstItems) : Infinity,
+		[table, takeFirstItems],
+	)
+}
