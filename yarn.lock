@@ -1536,9 +1536,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@data-wrangling-components/react@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@data-wrangling-components/react@npm:0.3.0"
+"@data-wrangling-components/react@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@data-wrangling-components/react@npm:0.3.1"
   dependencies:
     core-js: ^3.12.1
     d3-format: ^3.1.0
@@ -1555,6 +1555,7 @@ __metadata:
     "@fluentui/react-hooks": ^8.2.4
     "@fluentui/utilities": ^8.2.1
     "@thematic/core": ^1.3.0
+    "@thematic/d3": ^1.3.0
     "@thematic/fluent": ^1.3.0
     "@thematic/react": ^1.3.0
     "@uifabric/icons": ^7.5.23
@@ -1563,7 +1564,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     styled-components: ^5.3.0
-  checksum: 0567bfa9bfeddafc10088d6768492098eced9ee91d0cbaf930630e9db394266827727379b86f719ddcb53c7f9019aa9ef1b5355579b68d0f492e65c3fe4bddd4
+  checksum: b2f3e9a6fc42c9c624c42cc7a28afb4db71b2bfd5b8c107ea9e41baa6a30cf5de31378fb2c6dd53710eb7cf01f5a1f7b06bc03a57ae3e9d2688d821f3a62e2a6
   languageName: node
   linkType: hard
 
@@ -12391,7 +12392,7 @@ typescript@^4.5.2:
   resolution: "webapp@workspace:packages/webapp"
   dependencies:
     "@data-wrangling-components/core": ^0.2.0
-    "@data-wrangling-components/react": ^0.3.0
+    "@data-wrangling-components/react": ^0.3.1
     "@essex/scripts": ^18.2.0
     "@essex/vite-config": ^18.0.1
     "@fluentui/font-icons-mdl2": ^8.1.17
