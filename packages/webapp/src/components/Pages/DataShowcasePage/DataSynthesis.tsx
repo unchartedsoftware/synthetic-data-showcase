@@ -13,21 +13,15 @@ import {
 import { memo, useCallback } from 'react'
 import { CsvTable } from './CsvTable'
 import {
-	defaultCsvContent,
-	defaultEvaluatedResult,
-	defaultNavigateResult,
-} from '~models'
-import {
 	useCacheSize,
 	useIsProcessing,
 	useRecordLimitValue,
+	useResetOutputs,
 	useResolution,
 	useSensitiveContentValue,
 	useSyntheticContent,
 } from '~states'
 import {
-	useEvaluatedResultSetter,
-	useNavigateResultSetter,
 	useProcessingProgressSetter,
 	useWasmWorkerValue,
 } from '~states/dataShowcaseContext'
@@ -41,8 +35,7 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 	const [isProcessing, setIsProcessing] = useIsProcessing()
 	const sensitiveContent = useSensitiveContentValue()
 	const [syntheticContent, setSyntheticContent] = useSyntheticContent()
-	const setEvaluatedResult = useEvaluatedResultSetter()
-	const setNavigateResult = useNavigateResultSetter()
+	const resetOutputs = useResetOutputs()
 	const setProcessingProgress = useProcessingProgressSetter()
 
 	const theme = getTheme()
@@ -66,9 +59,7 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 
 	const onRunGenerate = useCallback(async () => {
 		setIsProcessing(true)
-		setSyntheticContent(defaultCsvContent)
-		setEvaluatedResult(defaultEvaluatedResult)
-		setNavigateResult(defaultNavigateResult)
+		resetOutputs()
 		setProcessingProgress(0.0)
 
 		const response = await worker?.generate(
@@ -99,8 +90,7 @@ export const DataSynthesis: React.FC = memo(function DataSynthesis() {
 		worker,
 		setIsProcessing,
 		setSyntheticContent,
-		setEvaluatedResult,
-		setNavigateResult,
+		resetOutputs,
 		sensitiveContent,
 		recordLimit,
 		resolution,

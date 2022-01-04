@@ -16,17 +16,7 @@ import {
 	useTheme,
 } from '@fluentui/react'
 import { memo, useCallback, useState } from 'react'
-import {
-	defaultCsvContent,
-	defaultEvaluatedResult,
-	defaultNavigateResult,
-} from '~models'
-import {
-	useEvaluatedResultSetter,
-	useNavigateResultSetter,
-	useSensitiveContent,
-	useSyntheticContentSetter,
-} from '~states'
+import { useResetOutputs, useSensitiveContent } from '~states'
 import {
 	BinOperationJoinCondition,
 	BinOperationType,
@@ -54,9 +44,7 @@ export const CustomDataBinning: React.FC<CustomDataBinningProps> = memo(
 	function CustomDataBinning({ headerIndex }: CustomDataBinningProps) {
 		const [bins, setBins] = useState<ICustomBin[]>([])
 		const [csvContent, setCsvContent] = useSensitiveContent()
-		const setSyntheticContent = useSyntheticContentSetter()
-		const setEvaluatedResult = useEvaluatedResultSetter()
-		const setNavigateResult = useNavigateResultSetter()
+		const resetOutputs = useResetOutputs()
 
 		const theme = useTheme()
 
@@ -150,19 +138,9 @@ export const CustomDataBinning: React.FC<CustomDataBinningProps> = memo(
 					...csvContent,
 					items: newItems,
 				})
-				setSyntheticContent(defaultCsvContent)
-				setEvaluatedResult(defaultEvaluatedResult)
-				setNavigateResult(defaultNavigateResult)
+				resetOutputs()
 			}
-		}, [
-			bins,
-			csvContent,
-			headerIndex,
-			setCsvContent,
-			setSyntheticContent,
-			setEvaluatedResult,
-			setNavigateResult,
-		])
+		}, [bins, csvContent, headerIndex, setCsvContent, resetOutputs])
 
 		const stackTokens: IStackTokens = {
 			childrenGap: theme.spacing.m,

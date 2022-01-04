@@ -7,6 +7,7 @@ import {
 	SetterOrUpdater,
 	useRecoilState,
 	useRecoilValue,
+	useResetRecoilState,
 	useSetRecoilState,
 } from 'recoil'
 import { defaultEvaluatedResult, IEvaluatedResult } from '~models'
@@ -29,4 +30,8 @@ export function useEvaluatedResultValue(): IEvaluatedResult {
 
 export function useEvaluatedResultSetter(): SetterOrUpdater<IEvaluatedResult> {
 	return useSetRecoilState(state)
+}
+
+export function useResetEvaluatedResult(): () => void {
+	return useResetRecoilState(state)
 }

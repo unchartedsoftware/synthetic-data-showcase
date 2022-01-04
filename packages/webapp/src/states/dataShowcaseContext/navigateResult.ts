@@ -7,6 +7,7 @@ import {
 	SetterOrUpdater,
 	useRecoilState,
 	useRecoilValue,
+	useResetRecoilState,
 	useSetRecoilState,
 } from 'recoil'
 import { defaultNavigateResult, INavigateResult } from '~models'
@@ -29,4 +30,8 @@ export function useNavigateResultValue(): INavigateResult {
 
 export function useNavigateResultSetter(): SetterOrUpdater<INavigateResult> {
 	return useSetRecoilState(state)
+}
+
+export function useResetNavigateResult(): () => void {
+	return useResetRecoilState(state)
 }

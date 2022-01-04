@@ -15,17 +15,7 @@ import {
 } from '@fluentui/react'
 import _ from 'lodash'
 import { memo, useCallback, useEffect, useState } from 'react'
-import {
-	defaultCsvContent,
-	defaultEvaluatedResult,
-	defaultNavigateResult,
-} from '~models'
-import {
-	useEvaluatedResultSetter,
-	useNavigateResultSetter,
-	useSensitiveContent,
-	useSyntheticContentSetter,
-} from '~states'
+import { useResetOutputs, useSensitiveContent } from '~states'
 import {
 	BinOperationJoinCondition,
 	BinOperationType,
@@ -48,9 +38,7 @@ export const ColumnValueReplacer: React.FC<ColumnValueReplacerProps> = memo(
 		const [currentValue, setCurrentValue] = useState('')
 		const [valueToReplace, setValueToReplace] = useState('')
 		const [csvContent, setCsvContent] = useSensitiveContent()
-		const setSyntheticContent = useSyntheticContentSetter()
-		const setEvaluatedResult = useEvaluatedResultSetter()
-		const setNavigateResult = useNavigateResultSetter()
+		const resetOutputs = useResetOutputs()
 
 		const theme = useTheme()
 
@@ -102,9 +90,7 @@ export const ColumnValueReplacer: React.FC<ColumnValueReplacerProps> = memo(
 					...csvContent,
 					items: newItems,
 				})
-				setSyntheticContent(defaultCsvContent)
-				setEvaluatedResult(defaultEvaluatedResult)
-				setNavigateResult(defaultNavigateResult)
+				resetOutputs()
 				onUpdateCurrentValue('')
 				onUpdateValueToReplace('')
 			}
@@ -114,9 +100,7 @@ export const ColumnValueReplacer: React.FC<ColumnValueReplacerProps> = memo(
 			csvContent,
 			headerIndex,
 			setCsvContent,
-			setSyntheticContent,
-			setEvaluatedResult,
-			setNavigateResult,
+			resetOutputs,
 			onUpdateCurrentValue,
 			onUpdateValueToReplace,
 		])

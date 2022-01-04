@@ -10,20 +10,11 @@ import {
 	useTheme,
 } from '@fluentui/react'
 import { Form, useFormik, FormikProvider } from 'formik'
-import { memo, useCallback, useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import * as yup from 'yup'
-import {
-	defaultCsvContent,
-	defaultEvaluatedResult,
-	defaultNavigateResult,
-} from '~models'
-import {
-	useEvaluatedResultSetter,
-	useNavigateResultSetter,
-	useSensitiveContent,
-	useSyntheticContentSetter,
-} from '~states'
-import { findMinMax, InplaceBinning, stringToNumber } from '~utils'
+import { useFixedWidthBinning } from './hooks'
+import { useSensitiveContent } from '~states'
+import { findMinMax, stringToNumber } from '~utils'
 
 export interface FixedWidthDataBinningProps {
 	headerIndex: number
@@ -38,34 +29,8 @@ const validationSchema = yup.object().shape({
 export const FixedWidthDataBinning: React.FC<FixedWidthDataBinningProps> = memo(
 	function FixedWidthDataBinning({ headerIndex }: FixedWidthDataBinningProps) {
 		const [csvContent, setCsvContent] = useSensitiveContent()
-		const setSyntheticContent = useSyntheticContentSetter()
-		const setEvaluatedResult = useEvaluatedResultSetter()
-		const setNavigateResult = useNavigateResultSetter()
-		const onRun = useCallback(
-			values => {
-				const newItems = [...csvContent.items.map(item => [...item])]
+		const onRun = useFixedWidthBinning(csvContent, headerIndex, setCsvContent)
 
-				new InplaceBinning()
-					.fixedBinWidth(values.binWidth, values.minValue, values.maxValue)
-					.run(newItems, headerIndex)
-
-				setCsvContent({
-					...csvContent,
-					items: newItems,
-				})
-				setSyntheticContent(defaultCsvContent)
-				setEvaluatedResult(defaultEvaluatedResult)
-				setNavigateResult(defaultNavigateResult)
-			},
-			[
-				csvContent,
-				headerIndex,
-				setCsvContent,
-				setSyntheticContent,
-				setEvaluatedResult,
-				setNavigateResult,
-			],
-		)
 		const formik = useFormik({
 			validationSchema,
 			initialValues: {

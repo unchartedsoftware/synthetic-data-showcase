@@ -20,17 +20,17 @@ import {
 	RareCombinationsByLengthChart,
 } from '~components/Charts'
 import { EvaluationSummary } from '~components/EvaluationSummary'
-import { defaultEvaluatedResult, defaultNavigateResult } from '~models'
 import {
 	useIsProcessing,
 	useRecordLimitValue,
 	useReportingLength,
+	useResetEvaluatedResult,
+	useResetNavigateResult,
 	useResolutionValue,
 	useSensitiveContentValue,
 } from '~states'
 import {
 	useEvaluatedResult,
-	useNavigateResultSetter,
 	useProcessingProgressSetter,
 	useSyntheticContentValue,
 	useWasmWorkerValue,
@@ -45,7 +45,8 @@ export const DataEvaluation: React.FC = memo(function DataEvaluation() {
 	const sensitiveContent = useSensitiveContentValue()
 	const syntheticContent = useSyntheticContentValue()
 	const [evaluatedResult, setEvaluatedResult] = useEvaluatedResult()
-	const setNavigateResult = useNavigateResultSetter()
+	const resetEvaluatedResult = useResetEvaluatedResult()
+	const resetNavigateResult = useResetNavigateResult()
 	const resolution = useResolutionValue()
 	const setProcessingProgress = useProcessingProgressSetter()
 
@@ -92,8 +93,8 @@ export const DataEvaluation: React.FC = memo(function DataEvaluation() {
 
 	const onRunEvaluate = useCallback(async () => {
 		setIsProcessing(true)
-		setEvaluatedResult(defaultEvaluatedResult)
-		setNavigateResult(defaultNavigateResult)
+		resetEvaluatedResult()
+		resetNavigateResult()
 		setProcessingProgress(0.0)
 
 		const response = await worker?.evaluate(
@@ -122,7 +123,8 @@ export const DataEvaluation: React.FC = memo(function DataEvaluation() {
 		reportingLength,
 		resolution,
 		setEvaluatedResult,
-		setNavigateResult,
+		resetEvaluatedResult,
+		resetNavigateResult,
 		setProcessingProgress,
 	])
 

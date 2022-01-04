@@ -20,9 +20,10 @@ import {
 	SelectedAttributes,
 } from '~components/AttributeSelector'
 import { useHorizontalScrolling } from '~components/Charts/hooks'
-import { defaultNavigateResult, PipelineStep } from '~models'
+import { PipelineStep } from '~models'
 import {
 	useNavigateResultSetter,
+	useResetNavigateResult,
 	useSyntheticContentValue,
 	useWasmWorkerValue,
 } from '~states'
@@ -40,6 +41,7 @@ const initiallySelectedHeaders = 6
 export const DataNavigation: React.FC = memo(function DataNavigation() {
 	const [isLoading, setIsLoading] = useState(true)
 	const setNavigateResult = useNavigateResultSetter()
+	const resetNavigateResult = useResetNavigateResult()
 	const setSelectedAttributes = useSelectedAttributesSetter()
 	const syntheticContent = useSyntheticContentValue()
 	const worker = useWasmWorkerValue()
@@ -94,7 +96,7 @@ export const DataNavigation: React.FC = memo(function DataNavigation() {
 			setIsLoading(true)
 			setSelectedAttributeRows([])
 			setSelectedAttributes({})
-			setNavigateResult(defaultNavigateResult)
+			resetNavigateResult()
 			setSelectedAttributeRows([])
 			const input = rows(syntheticContent.table)
 			worker.navigate(input).then(result => {
@@ -107,7 +109,7 @@ export const DataNavigation: React.FC = memo(function DataNavigation() {
 				}
 			})
 		}
-	}, [syntheticContent, setIsLoading, setSelectedAttributeRows, setSelectedAttributes, worker, setNavigateResult])
+	}, [syntheticContent, setIsLoading, setSelectedAttributeRows, setSelectedAttributes, worker, setNavigateResult, resetNavigateResult])
 
 	useEffect(() => {
 		return () => {

@@ -7,6 +7,7 @@ import {
 	SetterOrUpdater,
 	useRecoilState,
 	useRecoilValue,
+	useResetRecoilState,
 	useSetRecoilState,
 } from 'recoil'
 import { defaultCsvContent, ICsvContent } from '~models'
@@ -30,4 +31,8 @@ export function useSensitiveContentValue(): ICsvContent {
 
 export function useSensitiveContentSetter(): SetterOrUpdater<ICsvContent> {
 	return useSetRecoilState(state)
+}
+
+export function useResetSensitiveContent(): () => void {
+	return useResetRecoilState(state)
 }

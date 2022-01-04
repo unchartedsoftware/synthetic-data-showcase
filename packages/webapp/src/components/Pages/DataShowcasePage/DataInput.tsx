@@ -17,22 +17,12 @@ import { CsvTable } from './CsvTable'
 import { useOnFileChange } from './hooks'
 import { DataBinning } from '~components/DataBinning'
 import { FileInputButton } from '~components/controls'
-import {
-	useEvaluatedResultSetter,
-	useIsProcessing,
-	useNavigateResultSetter,
-	useRecordLimit,
-	useSensitiveContent,
-	useSyntheticContentSetter,
-} from '~states'
+import { useIsProcessing, useRecordLimit, useSensitiveContent } from '~states'
 
 export const DataInput: FC = memo(function DataInput() {
 	const [recordLimit, setRecordLimit] = useRecordLimit()
 	const [isProcessing, setIsProcessing] = useIsProcessing()
 	const [sensitiveContent, setSensitiveContent] = useSensitiveContent()
-	const setSyntheticContent = useSyntheticContentSetter()
-	const setEvaluatedResult = useEvaluatedResultSetter()
-	const setNavigateResult = useNavigateResultSetter()
 
 	const theme = getTheme()
 
@@ -53,13 +43,7 @@ export const DataInput: FC = memo(function DataInput() {
 		childrenGap: theme.spacing.s1,
 	}
 
-	const onFileChange = useOnFileChange(
-		setIsProcessing,
-		setSyntheticContent,
-		setEvaluatedResult,
-		setNavigateResult,
-		setSensitiveContent,
-	)
+	const onFileChange = useOnFileChange(setIsProcessing, setSensitiveContent)
 
 	const sensitiveColumnsWithZeros = sensitiveContent.columnsWithZeros?.filter(
 		i => sensitiveContent.headers[i].use,
